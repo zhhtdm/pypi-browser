@@ -1,7 +1,0 @@
-README.md
-pyproject.toml
-lzhbaidutranslate.egg-info/PKG-INFO
-lzhbaidutranslate.egg-info/SOURCES.txt
-lzhbaidutranslate.egg-info/dependency_links.txt
-lzhbaidutranslate.egg-info/top_level.txt
-lzhbrowser/__init__.py
