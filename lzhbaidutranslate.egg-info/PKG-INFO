@@ -1,0 +1,25 @@
+Metadata-Version: 2.4
+Name: lzhbaidutranslate
+Version: 0.1.0
+Summary: 封装百度翻译 API, 翻译字符串或字符串列表
+Author-email: lzh <zhhtdm@hotmail.com>
+License: MIT
+Project-URL: Homepage, https://github.com/zhhtdm/baidu-translate
+Project-URL: Repository, https://github.com/zhhtdm/baidu-translate
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+
+# baidu translate
+一个`playwright`实例，支持`cookie`、自动代理(白名单)、远程调试、设定加载内容
+
+## 示例
+-
+## 安装 - [PyPI](https://pypi.org/project/lzhbrowser/)
+```bash
+pip install lzhbrowser
+```
+
+## API
+[Document](https://zhhtdm.github.io/pypi-browser/)
+
+

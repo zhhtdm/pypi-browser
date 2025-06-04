@@ -1,0 +1,6 @@
+.venv
+__pycache__
+lzhbrowser.egg-info
+dist
+requirements.txt
+user_data

@@ -1,0 +1,25 @@
+[project]
+name = "lzhbrowser"
+version = "0.1.0"
+description = "一个`playwright`实例，支持`cookie`、自动代理(白名单)、远程调试、设定加载内容"
+authors = [
+    { name = "lzh", email = "zhhtdm@hotmail.com" }
+]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "playwright",
+    "lzhgetlogger"
+]
+
+[project.urls]
+Homepage = "https://github.com/zhhtdm/pypi-browser"
+Repository = "https://github.com/zhhtdm/pypi-browser"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
