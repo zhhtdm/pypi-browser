@@ -7,6 +7,8 @@ import sys
 import random
 from fnmatch import fnmatch
 from urllib.parse import urlparse
+import typing
+from typing import Literal
 
 class Browser:
     """
@@ -83,29 +85,35 @@ class Browser:
         await browser._init()
         return browser
 
-    async def fetch(self, url:str, retries = None, timeout = None, wait_until = 'domcontentloaded', abort:frozenset[str] = {}):
+    async def fetch(
+            self,
+            url:str,
+            retries = None,
+            timeout: typing.Optional[float] = None,
+            wait_until: typing.Optional[Literal["commit", "domcontentloaded", "load", "networkidle"]] = None,
+            abort:frozenset[str] = {}):
         """
         - 接收`url`，返回`html`
         - 会根据`url`和白名单自动选择是否走代理
         - 可以跳过设定类型内容的加载
         - 如果需要其他流程控制，可以操作`context_direct`或`context_proxy`两个窗口实例来加载网页
         - 参数:
-            - `wait_until` 取值范围: `["commit", "domcontentloaded", "load", "networkidle"]`
+            - `wait_until` : `Union["commit", "domcontentloaded", "load", "networkidle", None]`
             - `abort` : [ResourceType 的子集](https://playwright.dev/python/docs/api/class-request#request-resource-type)，跳过此集合内类型内容的加载，[ResourceType : `{"document", "stylesheet", "image", "media", "font", "script", "texttrack", "xhr", "fetch", "eventsource", "websocket", "manifest", "other"}`](https://playwright.dev/python/docs/api/class-request#request-resource-type)
         """
         retries = self._max_retry_default if not retries else retries
         timeout = self._page_timeout_default if not timeout else timeout
         async with self._pages_semaphore:
             context = self.context_proxy if self._is_whitelisted(url) else self.context_direct
-            page = await context.new_page()
-            if abort:
-                async def handle_route(route, request):
-                    if request.resource_type in abort:
-                        await route.abort()
-                    else:
-                        await route.continue_()
-                await page.route("**/*", handle_route)
             for attempt in range(1, retries + 2):
+                page = await context.new_page()
+                if abort:
+                    async def handle_route(route, request):
+                        if request.resource_type in abort:
+                            await route.abort()
+                        else:
+                            await route.continue_()
+                    await page.route("**/*", handle_route)
                 try:
                     start = asyncio.get_event_loop().time()
                     await page.goto(url, timeout=timeout, wait_until=wait_until)
@@ -116,13 +124,13 @@ class Browser:
                     return content
                 except PlaywrightTimeoutError:
                     self._logger.warning(f"Timeout on attempt {attempt} for {url}")
+                    await page.close()
                     if attempt >= retries + 1:
-                        await page.close()
                         return None
                 except Exception as e:
                     self._logger.error(f"Error on attempt {attempt} for {url}: {e}")
+                    await page.close()
                     if attempt >= retries + 1:
-                        await page.close()
                         return None
 
     def white_list_update(self, whitel_list:set[str]):
