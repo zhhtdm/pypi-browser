@@ -91,6 +91,7 @@ class Browser:
             retries = None,
             timeout: typing.Optional[float] = None,
             wait_until: typing.Optional[Literal["commit", "domcontentloaded", "load", "networkidle"]] = None,
+            selector:str = None,
             abort:frozenset[str] = {}):
         """
         - 接收`url`，返回`html`
@@ -117,6 +118,8 @@ class Browser:
                 try:
                     start = asyncio.get_event_loop().time()
                     await page.goto(url, timeout=timeout, wait_until=wait_until)
+                    if selector:
+                        await page.wait_for_selector(selector = selector, timeout=timeout)
                     content = await page.content()
                     elapsed = asyncio.get_event_loop().time() - start
                     self._logger.info(f"Success [{url}] in {elapsed:.2f}s")
@@ -124,14 +127,15 @@ class Browser:
                     return content
                 except PlaywrightTimeoutError:
                     self._logger.warning(f"Timeout on attempt {attempt} for {url}")
-                    await page.close()
-                    if attempt >= retries + 1:
+                    asyncio.create_task(self._close_page_later(page, delay= 1 + 6 * random.random()))
+                    if attempt > retries:
                         return None
                 except Exception as e:
                     self._logger.error(f"Error on attempt {attempt} for {url}: {e}")
-                    await page.close()
-                    if attempt >= retries + 1:
+                    asyncio.create_task(self._close_page_later(page, delay= 1 + 6 * random.random()))
+                    if attempt > retries:
                         return None
+                    await asyncio.sleep(1)
 
     def white_list_update(self, whitel_list:set[str]):
         """
