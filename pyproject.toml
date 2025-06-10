@@ -1,6 +1,6 @@
 [project]
 name = "lzhbrowser"
-version = "0.1.2"
+version = "0.1.3"
 description = "一个`playwright`实例，支持`cookie`、自动代理(白名单)、远程调试、设定加载内容"
 authors = [
     { name = "lzh", email = "zhhtdm@hotmail.com" }

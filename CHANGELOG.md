@@ -1,3 +1,6 @@
+## v0.1.3 (2025-05-25)
+- feat fetch方法添加wait_ms参数
+
 ## v0.1.2 (2025-05-25)
 - feat fetch方法添加wait_for_selector参数
 

@@ -92,6 +92,7 @@ class Browser:
             timeout: typing.Optional[float] = None,
             wait_until: typing.Optional[Literal["commit", "domcontentloaded", "load", "networkidle"]] = None,
             selector:str = None,
+            wait_ms:float = None,
             abort:frozenset[str] = {}):
         """
         - 接收`url`，返回`html`
@@ -120,6 +121,10 @@ class Browser:
                     await page.goto(url, timeout=timeout, wait_until=wait_until)
                     if selector:
                         await page.wait_for_selector(selector = selector, timeout=timeout)
+                        if not wait_ms or wait_ms < 1:
+                            await page.wait_for_timeout(500)
+                    if wait_ms:
+                        await page.wait_for_timeout(wait_ms)
                     content = await page.content()
                     elapsed = asyncio.get_event_loop().time() - start
                     self._logger.info(f"Success [{url}] in {elapsed:.2f}s")
