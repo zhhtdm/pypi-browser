@@ -102,6 +102,8 @@ class Browser:
         - 参数:
             - `wait_until` : `Union["commit", "domcontentloaded", "load", "networkidle", None]`
             - `abort` : [ResourceType 的子集](https://playwright.dev/python/docs/api/class-request#request-resource-type)，跳过此集合内类型内容的加载，[ResourceType : `{"document", "stylesheet", "image", "media", "font", "script", "texttrack", "xhr", "fetch", "eventsource", "websocket", "manifest", "other"}`](https://playwright.dev/python/docs/api/class-request#request-resource-type)
+            - `selector` : 如果设置了selector，则会启用`wait_for_selector()`
+            - `wait_ms` : 让浏览器额外加载运行一段时间再返回
         """
         retries = self._max_retry_default if not retries else retries
         timeout = self._page_timeout_default if not timeout else timeout
@@ -120,7 +122,7 @@ class Browser:
                     start = asyncio.get_event_loop().time()
                     await page.goto(url, timeout=timeout, wait_until=wait_until)
                     if selector:
-                        await page.wait_for_selector(selector = selector, timeout=timeout)
+                        await page.wait_for_selector(selectorgit=selector, timeout=timeout)
                         if not wait_ms or wait_ms < 1:
                             await page.wait_for_timeout(500)
                     if wait_ms:
